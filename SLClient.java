@@ -15,7 +15,7 @@ public class SLClient implements ClientInterface {
     private BufferedReader input; //reads the input from the server
     private PrintWriter output; //writes the output to the server
 
-    private final String serverAddress; //the address of the server
+    private final String serverAddress;//the address of the server
     private final int serverPort; //the port of the server
     private static final int CONNECTION_TIMEOUT = 5000; //5 seconds
 
@@ -43,7 +43,7 @@ public class SLClient implements ClientInterface {
             output = new PrintWriter(socket.getOutputStream(), true);
 
             String response = input.readLine();
-            if (response != null && response.startsWith("220")) {
+            if (response != null && response.startsWith("SUCCESS")) {
                 connected = true;
                 return true;
             }
@@ -83,7 +83,7 @@ public class SLClient implements ClientInterface {
             output.println("LOGIN " + username + " " + password);
             String response = input.readLine();
 
-            if (response != null && response.startsWith("200")) {
+            if (response != null && response.startsWith("SUCCESS")) {
                 currentUser = username;
                 return true;
             }
@@ -103,7 +103,7 @@ public class SLClient implements ClientInterface {
         try {
             output.println("CREATE_USER " + username + " " + password);
             String response = input.readLine();
-            return response != null && response.startsWith("200");
+            return response != null && response.startsWith("SUCCESS");
 
         } catch (IOException e) { //if the user creation fails, the client is disconnected
             System.err.println("User creation failed: " + e.getMessage());
@@ -119,7 +119,7 @@ public class SLClient implements ClientInterface {
         try {
             output.println("POST_ITEM " + title + "|" + description + "|" + String.format("%.2f", price) + "|" + sellerUsername);
             String response = input.readLine();
-            return response != null && response.startsWith("200");
+            return response != null && response.startsWith("SUCCESS");
 
         } catch (IOException e) { //if the item posting fails, the client is disconnected
             System.err.println("Failed to post item: " + e.getMessage());
@@ -135,7 +135,7 @@ public class SLClient implements ClientInterface {
         try {
             output.println("BUY_ITEM " + itemId + " " + buyerUsername);
             String response = input.readLine();
-            return response != null && response.startsWith("200");
+            return response != null && response.startsWith("SUCCESS");
 
         } catch (IOException e) { //if the purchase fails, the client is disconnected
             System.err.println("Purchase failed: " + e.getMessage());
@@ -152,7 +152,7 @@ public class SLClient implements ClientInterface {
         try {
             output.printf("SEND_MSG %s|%s|%s|%s%n", senderUsername, receiverUsername, itemId, body);
             String response = input.readLine();
-            return response != null && response.startsWith("200");
+            return response != null && response.startsWith("SUCCESS");
 
         } catch (IOException e) { //if the message sending fails, the client is disconnected
             System.err.println("Message send failed: " + e.getMessage());
@@ -197,5 +197,20 @@ public class SLClient implements ClientInterface {
     @Override
     public boolean isConnected() {
         return connected && socket != null && socket.isConnected() && !socket.isClosed();
+    }
+
+    @Override
+    public String getResponse() {
+        String response = null;
+        
+        try {
+            if (input != null) { //ensures that the input has a value
+                response = input.readLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading response: " + e.getMessage());
+        }
+        
+        return response;
     }
 }
