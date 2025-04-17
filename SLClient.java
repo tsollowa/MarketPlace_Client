@@ -213,4 +213,13 @@ public class SLClient implements ClientInterface {
         
         return response;
     }
+
+    public static void main(String[] args) {
+        SLClient client = new SLClient();
+        if (client.connect()) {
+            System.out.println("Client connect to Server!");
+        } else {
+            System.out.println("Client not connected to Server!");
+        }
+    }
 }
