@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 /**
  * this interface defines what methods a client needs to have
- * @author Victoria Parashchak
+ * @author Victoria Parashchak, Thomas Solloway
  * @version April 15, 2025
  */
 
